@@ -3,11 +3,12 @@
 
 int main()
 {
+    Window window;
+
     Sandbox sandbox;
     ((Application)sandbox).Start();
     sandbox.Start();
 
-    Window window;
 
     while (!window.ShouldClose())
     {
