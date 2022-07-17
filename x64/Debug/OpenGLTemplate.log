@@ -1,7 +1,2 @@
-﻿  EntryPoint.cpp
-  Sandbox.h
-  Generating Code...
-LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-glew32s.lib(glew.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'glew32s.lib(glew.obj)' or at 'D:\secure_folder\OpenGlGame\x64\Debug\vc120.pdb'; linking object as if no debug info
-  OpenGLTemplate.vcxproj -> D:\secure_folder\OpenGlGame\x64\Debug\OpenGLTemplate.exe
+﻿  SpriteRenderer.cpp
+  OpenGLTemplate.vcxproj -> C:\Users\rt\Desktop\Folders\_SECRET\Visual Studio\c++\OpenGLTemplate\x64\Debug\OpenGLTemplate.exe

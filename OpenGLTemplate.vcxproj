@@ -55,7 +55,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies/GLEW/include;$(SolutionDir)Dependencies/GLFW/include;$(SolutionDir)Dependencies/GLM/glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies/GLEW/include;$(SolutionDir)Dependencies/GLFW/include;$(SolutionDir)Dependencies/GLM</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -72,7 +72,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies/GLEW/include;$(SolutionDir)Dependencies/GLFW/include;$(SolutionDir)Dependencies/GLM/glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies/GLEW/include;$(SolutionDir)Dependencies/GLFW/include;$(SolutionDir)Dependencies/GLM</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -84,14 +84,39 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp" />
-    <ClCompile Include="EntryPoint.cpp" />
-    <ClCompile Include="Sandbox.h" />
-    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Source\Core\Events.cpp" />
+    <ClCompile Include="Source\Core\GameObject.cpp" />
+    <ClCompile Include="Source\OpenGL\IndexArray.cpp" />
+    <ClCompile Include="Source\Core\EntryPoint.cpp" />
+    <ClCompile Include="Source\OpenGL\Shader.cpp" />
+    <ClCompile Include="Source\stb_image\stb_image.cpp" />
+    <ClCompile Include="Source\OpenGL\Texture.cpp" />
+    <ClCompile Include="Source\OpenGL\VertexArray.cpp" />
+    <ClCompile Include="Source\OpenGL\VertexBuffer.cpp" />
+    <ClCompile Include="Source\Core\Window.cpp" />
+    <ClCompile Include="Source\Core\Components\Transform.cpp" />
+    <ClCompile Include="Source\Core\Components\SpriteRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h" />
-    <ClInclude Include="Window.h" />
+    <ClInclude Include="Source\Core\GameObject.h" />
+    <ClInclude Include="Source\Game.h" />
+    <ClInclude Include="Source\Core\Events.h" />
+    <ClInclude Include="Source\OpenGL\IndexArray.h" />
+    <ClInclude Include="Source\OpenGL\Shader.h" />
+    <ClInclude Include="Source\stb_image\stb_image.h" />
+    <ClInclude Include="Source\OpenGL\Texture.h" />
+    <ClInclude Include="Source\OpenGL\VertexArray.h" />
+    <ClInclude Include="Source\OpenGL\VertexBuffer.h" />
+    <ClInclude Include="Source\Core\Window.h" />
+    <ClInclude Include="Source\Core\Components\Transform.h" />
+    <ClInclude Include="Source\Core\Components\SpriteRenderer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="basic.fragment" />
+    <None Include="basic.vertex" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="card.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
