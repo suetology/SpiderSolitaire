@@ -25,6 +25,7 @@ void Events::Init(GLFWwindow* window)
 
 void Events::OnUpdate()
 {
+	m_MouseDelta = glm::vec2(0.0f);
 	m_CurrentFrame++;
 }
 
@@ -58,6 +59,13 @@ bool Events::GetMouseButton(unsigned int button)
 	return m_Keys[KEYS_NUM + button];
 }
 
+bool Events::MouseEntered(GameObject object)
+{
+	
+
+	return false;
+}
+
 void Events::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS)
@@ -86,13 +94,16 @@ void Events::MouseButtonCallback(GLFWwindow* window, int button, int action, int
 	}
 }
 
+#include <iostream>
 void Events::CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	float xPos = static_cast<float>(xpos);
 	float yPos = static_cast<float>(ypos);
 
-	m_MouseDelta.x = xPos - m_MousePos.x;
-	m_MouseDelta.y = m_MousePos.y - yPos;
+	glm::vec2 newMousePos = glm::vec2(xPos, yPos);
 
-	m_MousePos = glm::vec2(xPos, yPos);
+	m_MouseDelta.x = newMousePos.x - m_MousePos.x;
+	m_MouseDelta.y = m_MousePos.y - newMousePos.y;
+
+	m_MousePos = newMousePos;
 }

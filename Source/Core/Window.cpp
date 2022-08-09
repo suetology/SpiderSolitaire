@@ -4,17 +4,18 @@
 
 float Window::m_AspectRatio;
 int Window::m_Width;
-int Window::m_Heigth;
+int Window::m_Height;
+float Window::m_Scale;
 const char* Window::m_Title;
 glm::vec3 Window::m_BackgroundColor;
 GLFWwindow* Window::m_Window;
 
-#include <iostream>
-int Window::Init(int width, int height, const char* title, glm::vec3 backgroundColor)
+int Window::Init(int width, int height, const char* title, float scale, glm::vec3 backgroundColor)
 {
     m_Width = width;
-    m_Heigth = height;
-    m_AspectRatio = (float)m_Width / m_Heigth;
+    m_Height = height;
+    m_Scale = scale;
+    m_AspectRatio = (float)m_Width / m_Height;
     m_Title = title;
     m_BackgroundColor = backgroundColor;
 
@@ -48,11 +49,12 @@ int Window::Init(int width, int height, const char* title, glm::vec3 backgroundC
     return 0;
 }
 
-int Window::Init(const char* title, glm::vec3 backgroundColor)
+int Window::Init(const char* title, float scale, glm::vec3 backgroundColor)
 {
     m_Width = 1920;
-    m_Heigth = 1080;
-    m_AspectRatio = (float)m_Width / m_Heigth;
+    m_Height = 1080;
+    m_Scale = scale;
+    m_AspectRatio = (float)m_Width / m_Height;
     m_Title = title;
     m_BackgroundColor = backgroundColor;
 
@@ -111,6 +113,22 @@ void Window::Terminate()
     glfwTerminate();
 }
 
+glm::vec2 Window::WorldToScreenPoint(glm::vec2 worldPoint)
+{
+    glm::vec2 screenPoint;
+    screenPoint.x = glm::round((worldPoint.x / 2 / m_Scale / m_AspectRatio + 0.5f) * m_Width);
+    screenPoint.y = glm::round((1 - (worldPoint.y / 2 / m_Scale + 0.5f)) * m_Height);
+    return screenPoint;
+}
+
+glm::vec2 Window::ScreenToWorldPoint(glm::vec2 screenPoint)
+{
+    glm::vec2 worldPoint;
+    worldPoint.x = (screenPoint.x / m_Width - 0.5f) * 2 * m_Scale * m_AspectRatio;
+    worldPoint.y = -(screenPoint.y / m_Height - 0.5f) * 2 * m_Scale;
+    return worldPoint;
+}
+
 void Window::Close()
 {
     glfwSetWindowShouldClose(m_Window, true);
@@ -121,6 +139,6 @@ void Window::WindowResizeCallback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 
     m_Width = width;
-    m_Heigth = height;
+    m_Height = height;
     m_AspectRatio = (float)width / height;
 }

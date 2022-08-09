@@ -1,9 +1,6 @@
 #include "Transform.h"
 
-Transform::Transform()
-	: position(glm::vec2(0.0f)),
-	  rotation(glm::vec2(0.0f)),
-	  scale(glm::vec2(1.0f))
+Transform::Transform(glm::vec2 p, glm::vec2 r, glm::vec2 s) 
+	: position(p), rotation(r), scale(s)
 {
-
 }

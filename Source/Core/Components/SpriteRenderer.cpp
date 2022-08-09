@@ -7,35 +7,42 @@
 #include "../../Core/Window.h"
 #include "../../Core/Events.h"
 
-SpriteRenderer::SpriteRenderer(Shader* s, Texture* tex, int spriteNumber, int spriteCol, int spriteRow)
+SpriteRenderer::SpriteRenderer(SortingLayer layer, Shader* s, Sprite* fs, Sprite* bs, Sprite* cs)
 {
-	spriteColumns = spriteCol;
-	spriteRows = spriteRow;
+	sortingLayer = layer;
+	orderInLayer = 0;
 	shader = s;
-	texture = tex;
-	vao = new VertexArray();
-	vao->Bind();
-	vbo = new VertexBuffer(spriteNumber, texture->GetWidth(), texture->GetHeight(), texture->GetWidth() / spriteColumns, texture->GetHeight() / spriteRows);
+	frontSprite = fs;
+	backSprite = bs;
+	currentSprite = cs;
 }
 
 SpriteRenderer::~SpriteRenderer()
 {
-	delete vbo;
-	delete vao;
+	delete frontSprite;
+	delete backSprite;
 }
 
-void SpriteRenderer::Render(Transform* transform)
+void SpriteRenderer::Render(Transform* t)
 {
-	glm::vec2 pos = transform->position;
-	glm::mat4 translation = glm::mat4(1.0f);
-	translation = glm::translate(translation, glm::vec3(pos, 0.0f));
+	glm::mat4 transform = glm::mat4(1.0f);
 
-	texture->Bind();
+	glm::vec2 pos = t->position;
+	transform = glm::translate(transform, glm::vec3(pos, 0.0f));
+	
+	glm::vec2 scale = t->scale;
+	transform = glm::scale(transform, glm::vec3(scale, 1.0f));
+
+	glm::vec2 rotation = t->rotation;
+	transform = glm::translate(transform, glm::vec3(rotation, 0.0f));
+
+	currentSprite->texture->Bind();
 	shader->Use();
-	shader->UniformFloat("textureRatio", ((float)texture->GetWidth() / spriteColumns) / ((float)texture->GetHeight() / spriteRows));
+	shader->UniformFloat("spriteRatio", currentSprite->GetSpriteRatio());
 	shader->UniformFloat("aspectRatio", Window::GetAspectRatio());
-	shader->UniformMat4f("transform", glm::value_ptr(translation));
-	vao->Bind();
-	vbo->Bind();
+	shader->UniformFloat("windowScale", Window::GetScale());
+	shader->UniformMat4f("transform", glm::value_ptr(transform));
+	currentSprite->vao->Bind();
+	currentSprite->vbo->Bind();
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }

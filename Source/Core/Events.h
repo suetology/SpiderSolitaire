@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Window.h"
+#include "GameObject.h"	
 
 #include <glm/glm.hpp>
 
@@ -32,6 +33,8 @@ public:
 	static bool GetMouseButtonDown(unsigned int button);
 	static bool GetMouseButtonUp(unsigned int button);
 	static bool GetMouseButton(unsigned int button);
+
+	static bool MouseEntered(GameObject object);
 
 	inline static glm::vec2 GetMousePos() { return m_MousePos; }
 	inline static glm::vec2 GetMouseDelta() { return m_MouseDelta; }

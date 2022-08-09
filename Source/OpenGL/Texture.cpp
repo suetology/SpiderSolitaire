@@ -20,7 +20,6 @@ Texture::Texture(const char* filename)
 		if (m_NrChannels == 4)
 			format = GL_RGBA;
 
-		//std::cout << width << " " << height << std::endl;
 		glTexImage2D(GL_TEXTURE_2D, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}

@@ -2,14 +2,14 @@
 
 #include "Components/Transform.h"
 #include "Components/SpriteRenderer.h"
-
-#include <iostream>
+#include "Components/BoxCollider.h"
 
 class GameObject
 {
 private:
 	Transform* transform;
 	SpriteRenderer* spriteRenderer;
+	BoxCollider* boxCollider;
 
 public:
 	GameObject();
@@ -26,8 +26,10 @@ public:
 
 	void AddComponent(Transform* t);
 	void AddComponent(SpriteRenderer* sr);
+	void AddComponent(BoxCollider* bc);
 
 private:
 	Transform* GetComponent(Transform* v);
 	SpriteRenderer* GetComponent(SpriteRenderer* v);
+	BoxCollider* GetComponent(BoxCollider* v);
 };

@@ -6,12 +6,16 @@ out vec4 VertexColor;
 out vec2 TexCoords;
 
 uniform float aspectRatio;
-uniform float textureRatio;
+uniform float spriteRatio;
+uniform float windowScale;
 uniform mat4 transform;
 
 void main()
 {
-    gl_Position = transform * vec4(aPos.x / aspectRatio, aPos.y / textureRatio, 0.0, 1.0); 
+    vec4 pos = transform * vec4(aPos.x * spriteRatio, aPos.y, 0.0, 1.0);
+    pos.x = pos.x / aspectRatio / windowScale;
+    pos.y = pos.y / windowScale;
+    gl_Position = pos; 
     VertexColor = vec4(1.0f, 1.0f, 1.0f, 1.0f); 
     TexCoords = aTexCoords;
 }

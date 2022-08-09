@@ -31,6 +31,10 @@ void GameObject::AddComponent(SpriteRenderer * sr)
 {
 	spriteRenderer = sr;
 }
+void GameObject::AddComponent(BoxCollider* bc)
+{
+	boxCollider = bc;
+}
 
 Transform* GameObject::GetComponent(Transform * v)
 {
@@ -41,4 +45,9 @@ SpriteRenderer* GameObject::GetComponent(SpriteRenderer * v)
 {
 	delete v;
 	return spriteRenderer;
+}
+BoxCollider* GameObject::GetComponent(BoxCollider* v)
+{
+	delete v;
+	return boxCollider;
 }
