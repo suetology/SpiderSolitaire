@@ -12,7 +12,8 @@
 enum class SortingLayer
 {
 	Hidden,
-	Open
+	Open,
+	Taken
 };
 
 struct Sprite
@@ -20,16 +21,16 @@ struct Sprite
 	Texture* texture;
 	VertexArray* vao;
 	VertexBuffer* vbo;
-	int spriteNumber, spriteColumn, spriteRow;
+	int spriteNumber;
 	float spriteRatio;
 
-	Sprite(Texture* tex, int sn = 0, int sc = 1, int sr = 1)
-		: texture(tex), spriteNumber(sn), spriteColumn(sc), spriteRow(sr)
+	Sprite(Texture* tex, int sn = 0)
+		: texture(tex), spriteNumber(sn - 1)
 	{
-		spriteRatio = ((float)texture->GetWidth() / spriteColumn) / ((float)texture->GetHeight() / spriteRow);
+		spriteRatio = ((float)texture->GetWidth() / texture->GetWidthInSprites()) / ((float)texture->GetHeight() / texture->GetHeightInSprites());
 		vao = new VertexArray();
 		vao->Bind();
-		vbo = new VertexBuffer(spriteNumber, texture->GetWidth(), texture->GetHeight(), texture->GetWidth() / spriteColumn, texture->GetHeight() / spriteRow);
+		vbo = new VertexBuffer(spriteNumber, texture->GetWidth(), texture->GetHeight(), texture->GetWidth() / texture->GetWidthInSprites(), texture->GetHeight() / texture->GetHeightInSprites());
 	}
 
 	~Sprite()
@@ -60,5 +61,8 @@ public:
 	~SpriteRenderer();
 
 	inline Sprite* GetCurrentSprite() { return currentSprite; }
+
+	inline void SetFrontSprite() { currentSprite = frontSprite; }
+	inline void SetBackSprite() { currentSprite = backSprite; }
 };
 

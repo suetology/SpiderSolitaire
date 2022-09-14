@@ -102,6 +102,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Core\Random.h" />
     <ClInclude Include="Source\Core\Components\BoxCollider.h" />
+    <ClInclude Include="Source\Deck.h" />
     <ClInclude Include="Source\GameBoard.h" />
     <ClInclude Include="Source\Card.h" />
     <ClInclude Include="Source\Core\GameObject.h" />

@@ -113,6 +113,9 @@
     <ClInclude Include="Source\Core\Random.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Deck.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="basic.vertex">

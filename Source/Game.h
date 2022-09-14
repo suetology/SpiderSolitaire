@@ -13,8 +13,12 @@
 #include "stb_image/stb_image.h"
 #include "GameBoard.h"
 #include "Card.h"
+#include "Deck.h"
 
-#define CARD_COUNT 9 
+#define CARD_COUNT 104
+#define OPENED_CARDS 10
+#define HIDDEN_CARDS 44
+#define CARDS_IN_DECK 50
 
 class Game
 {
@@ -24,97 +28,122 @@ public:
 	Texture* backTexture;
 
 	GameBoard* gameBoard;
-	Card** cards;
-	std::vector<int> renderQueue;
-
-	bool move = false;
 
 	void Start()
 	{
-		cardsTexture = new Texture("Cards.png");
+		cardsTexture = new Texture("Cards.png", 13, 4);
 		backTexture = new Texture("CardBack.png");
 
 		shader = load_shader("basic.vertex", "basic.fragment");
 		
 		gameBoard = new GameBoard();
-		cards = new Card*[CARD_COUNT];
-		renderQueue.reserve(CARD_COUNT);
+
+		Deck::cards.reserve(CARD_COUNT);
 
 		Sprite* cardBackSprite = new Sprite(backTexture);
 
 		for (int i = 0; i < CARD_COUNT; i++)
 		{
-			int cardValue = 1;
-			cards[i] = new Card(CardSuit::Clubs, cardValue, CardState::Opened);
-			cards[i]->reorderCallback = std::bind(&Game::SortRenderQueue, this);
+			int cardValue = i % 13 + 1;
+			Deck::cards.push_back(new Card(CardSuit::Clubs, cardValue));
 
-			Sprite* cardFrontSprite = new Sprite(cardsTexture, cardValue - 1, 13, 4);
+			Sprite* cardFrontSprite = new Sprite(cardsTexture, cardValue);
 
-			SpriteRenderer* spriteRenderer = new SpriteRenderer(SortingLayer::Open, shader, cardFrontSprite, cardBackSprite, cardBackSprite);
-			Transform* transform = new Transform(gameBoard->GetCardPiles()[i]);
+			SpriteRenderer* spriteRenderer = new SpriteRenderer(SortingLayer::Hidden, shader, cardFrontSprite, cardBackSprite, cardFrontSprite);
+			Transform* transform = new Transform(glm::vec2(0.0f));
 			BoxCollider* boxCollider = new BoxCollider(transform, spriteRenderer);
 
-			cards[i]->AddComponent(transform);
-			cards[i]->AddComponent(spriteRenderer);
-			cards[i]->AddComponent(boxCollider);
+			Deck::cards[i]->AddComponent(transform);
+			Deck::cards[i]->AddComponent(spriteRenderer);
+			Deck::cards[i]->AddComponent(boxCollider);
+		}
+		Deck::Shuffle();
 
-			renderQueue.push_back(i);
+		for (int j = 0; j < CARDS_IN_DECK; j++)
+		{
+			Deck::cardsInDeck[j]->homePosition = gameBoard->GetDeckPile();
+			Deck::cardsInDeck[j]->GetComponent<Transform>()->position = gameBoard->GetDeckPile();
+			Deck::cardsInDeck[j]->state = CardState::InDeck;
+			Deck::cardsInDeck[j]->GetComponent<SpriteRenderer>()->SetBackSprite();
+		}
+
+		int i = 0;
+		for (int j = 0; j < HIDDEN_CARDS; j++)
+		{
+			glm::vec2 pos = glm::vec2(gameBoard->GetCardPiles()[j % 10].x, gameBoard->GetCardPiles()[j % 10].y - 0.1f * (j / 10));
+			Deck::cards[i + j]->homePosition = pos;
+			Deck::cards[i + j]->GetComponent<Transform>()->position = pos;
+			Deck::cards[i + j]->state = CardState::Hidden;
+			Deck::cards[i + j]->GetComponent<SpriteRenderer>()->SetBackSprite();
+
+			if (j >= 10)
+			{
+				Deck::cards[i + j - 10]->locker = Deck::cards[i + j];
+				Deck::cards[i + j]->locked = Deck::cards[i + j - 10];
+			}
+		}
+		i += HIDDEN_CARDS;
+
+		for (int j = 0; j < OPENED_CARDS; j++)
+		{
+			int offset = (j + 4) % 10 < 4 ? 5 : 4;
+			glm::vec2 pos = glm::vec2(gameBoard->GetCardPiles()[(j + 4) % 10].x, gameBoard->GetCardPiles()[(j + 4) % 10].y - 0.1f * offset);
+			Deck::cards[i + j]->homePosition = pos;
+			Deck::cards[i + j]->GetComponent<Transform>()->position = pos;
+			Deck::cards[i + j]->state = CardState::Opened;
+
+			Deck::cards[i + j - 10]->locker = Deck::cards[i + j];
+			Deck::cards[i + j]->locked = Deck::cards[i + j - 10];
 		}
 	}
 
 	void Update()
 	{
-		for (int i = CARD_COUNT - 1; i >= 0; i--)
-		{
-			if (int state = cards[renderQueue[i]]->Move())
+		for (int i = Deck::cards.size() - 1; i >= 0; i--)
+		{	
+			if (Deck::cards[i]->Move())
 			{
-				if (state == PLACED)
-				{
-					for (int j = 0; j < CARD_COUNT; j++)
-					{
-						if (cards[renderQueue[i]]->child != cards[j] &&
-							cards[j] != cards[renderQueue[i]] &&
-							cards[j]->GetComponent<BoxCollider>()->CheckCollision(cards[renderQueue[i]]->GetComponent<Transform>()->position))
-						{
-							if (cards[renderQueue[i]]->parent)
-							{
-								cards[renderQueue[i]]->parent->child = nullptr;
-								cards[renderQueue[i]]->parent = nullptr;
-							}
-
-							cards[j]->SetChild(cards[renderQueue[i]]);
-							break;
-						}
-						else if (cards[j]->child == cards[renderQueue[i]])
-						{
-							cards[j]->ReturnChild();
-						}
-					}
-				}
 				break;
 			}
 		}
 
-		for (int i = 0; i < CARD_COUNT; i++)
+		for (int i = 0; i < Deck::cards.size(); i++)
 		{
-			cards[renderQueue[i]]->Render();
+			Deck::cards[i]->Render();
 		}
-	} 
 
-	void SortRenderQueue()
-	{
-		for (int i = 0; i < renderQueue.size() - 1; i++)
+		if (Deck::cardsInDeck.size() > 0)
 		{
-			for (int j = i + 1; j < renderQueue.size(); j++)
+			Deck::cardsInDeck[0]->Render();
+
+			if (Events::GetMouseButtonDown(0) && Deck::cardsInDeck[0]->GetComponent<BoxCollider>()->CheckCollision(Window::ScreenToWorldPoint(Events::GetMousePos())))
 			{
-				if (cards[renderQueue[i]]->GetComponent<SpriteRenderer>()->orderInLayer >
-					cards[renderQueue[j]]->GetComponent<SpriteRenderer>()->orderInLayer)
+				std::vector<Card*> newCards;
+				for (int i = 0; i < Deck::cards.size(); i++)
 				{
-					int temp = renderQueue[i];
-					renderQueue[i] = renderQueue[j];
-					renderQueue[j] = temp;
+					if (Deck::cards[i]->state == CardState::Opened && !Deck::cards[i]->child)
+					{
+						Deck::cardsInDeck[0]->GetComponent<SpriteRenderer>()->orderInLayer =
+							Deck::cards[i]->GetComponent<SpriteRenderer>()->orderInLayer + 1;
+						
+						Deck::cards[i]->state = CardState::Locked;
+						Deck::cardsInDeck[0]->state = CardState::Opened;
+
+						Deck::cards[i]->locker = Deck::cardsInDeck[0];
+						Deck::cardsInDeck[0]->locked = Deck::cards[i];
+
+						Deck::cardsInDeck[0]->GetComponent<SpriteRenderer>()->SetFrontSprite();
+						Deck::cardsInDeck[0]->GetComponent<Transform>()->position = Deck::cards[i]->GetComponent<Transform>()->position;
+						Deck::cardsInDeck[0]->GetComponent<Transform>()->position.y -= 0.25f * Deck::cards[i]->GetComponent<Transform>()->scale.y;
+
+						Deck::cardsInDeck[0]->homePosition = Deck::cardsInDeck[0]->GetComponent<Transform>()->position;
+
+						newCards.push_back(Deck::cardsInDeck[0]);
+						Deck::cardsInDeck.erase(Deck::cardsInDeck.begin(), Deck::cardsInDeck.begin() + 1);
+					}
 				}
+				Deck::cards.insert(Deck::cards.end(), newCards.begin(), newCards.end());
 			}
 		}
-	}
+	} 
 };

@@ -5,17 +5,20 @@
 class Texture
 {
 public:
-	Texture(const char* filename);
+	Texture(const char* filename, int widthInSprites = 1, int heightInSprites = 1);
 	~Texture();
 
 	void Bind() const;
 	void Unbind() const;
 
-	inline int GetWidth() const { return m_Width; }
-	inline int GetHeight() const { return m_Height; }
+	inline int GetWidth() const { return width; }
+	inline int GetHeight() const { return height; }
+	inline int GetWidthInSprites() const { return widthInSprites; }
+	inline int GetHeightInSprites() const { return heightInSprites; }
 
 private:
-	unsigned int m_Id;
-	int m_Width, m_Height, m_NrChannels;
+	unsigned int id;
+	int width, height, nrChannels;
+	int widthInSprites, heightInSprites;
 };
 
